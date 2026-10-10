@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classic Carrom Board Game - ক্লাসিক ক্যারাম বোর্ড</title>
+    <title>Classic & Unfair Carrom Board Game - ক্লাসিক ও আনফেয়ার ক্যারাম বোর্ড</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -11,20 +11,70 @@
         
         body {
             font-family: 'Hind Siliguri', system-ui, -apple-system, sans-serif;
-            background: #111827;
-            color: #f3f4f6;
+            background: #0f172a;
+            color: #f8fafc;
             touch-action: manipulation;
         }
 
-        /* Glassmorphism panel styles */
         .glass-panel {
-            background: rgba(31, 41, 55, 0.75);
+            background: rgba(30, 41, 59, 0.8);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .board-container {
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(180, 83, 9, 0.2);
+        .board-shadow {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 35px rgba(217, 119, 6, 0.25);
+        }
+
+        /* Custom range slider styling for striker position */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 10px;
+            cursor: pointer;
+            background: #334155;
+            border-radius: 8px;
+            border: 1px solid #475569;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #f59e0b;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -7px;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+            border: 2px solid #ffffff;
+        }
+
+        input[type=range]::-moz-range-track {
+            width: 100%;
+            height: 10px;
+            cursor: pointer;
+            background: #334155;
+            border-radius: 8px;
+            border: 1px solid #475569;
+        }
+
+        input[type=range]::-moz-range-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #f59e0b;
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
         }
 
         /* Custom Scrollbar */
@@ -42,10 +92,10 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between items-center p-2 sm:p-4 select-none overflow-x-hidden">
 
-    <!-- Header Controls & Status -->
+    <!-- Header & Mode Selection -->
     <header class="w-full max-w-4xl flex flex-wrap justify-between items-center gap-3 mb-2 glass-panel p-3 rounded-2xl shadow-xl">
         <div class="flex items-center gap-3">
-            <div class="bg-amber-600 text-white p-2.5 rounded-xl shadow-lg flex items-center justify-center">
+            <div class="bg-gradient-to-br from-amber-500 to-amber-700 text-white p-2.5 rounded-xl shadow-lg flex items-center justify-center">
                 <i class="fa-solid fa-gamepad text-xl"></i>
             </div>
             <div>
@@ -54,59 +104,62 @@
             </div>
         </div>
 
-        <!-- Mode Selector & Sound Toggle -->
-        <div class="flex items-center gap-2">
-            <div class="bg-gray-800 p-1 rounded-xl flex border border-gray-700">
-                <button id="mode2p" onclick="setGameMode(2)" class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 bg-amber-500 text-gray-900 shadow-md">
+        <!-- Mode Switches -->
+        <div class="flex flex-wrap items-center gap-2">
+            <div class="bg-slate-900/90 p-1 rounded-xl flex border border-slate-700">
+                <button id="btn2p" onclick="setGameMode('2p')" class="px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 bg-amber-500 text-slate-950 shadow-md">
                     ২ প্লেয়ার
                 </button>
-                <button id="mode4p" onclick="setGameMode(4)" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-300 hover:text-white transition-all duration-200">
+                <button id="btn4p" onclick="setGameMode('4p')" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-300 hover:text-white transition-all duration-200">
                     ৪ প্লেয়ার
+                </button>
+                <button id="btnUnfair" onclick="setGameMode('unfair')" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-rose-300 hover:text-rose-100 transition-all duration-200 flex items-center gap-1">
+                    <i class="fa-solid fa-bolt text-rose-400"></i> আনফেয়ার মোড
                 </button>
             </div>
 
-            <button id="soundToggle" onclick="toggleSound()" class="p-2.5 bg-gray-800 hover:bg-gray-700 text-amber-400 rounded-xl border border-gray-700 transition-all">
+            <button id="soundToggle" onclick="toggleSound()" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-xl border border-slate-700 transition-all">
                 <i class="fa-solid fa-volume-high text-lg" id="soundIcon"></i>
             </button>
 
-            <button onclick="openRulesModal()" class="p-2.5 bg-gray-800 hover:bg-gray-700 text-blue-400 rounded-xl border border-gray-700 transition-all" title="নিয়মাবলী">
+            <button onclick="openRulesModal()" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-sky-400 rounded-xl border border-slate-700 transition-all" title="নিয়মাবলী">
                 <i class="fa-solid fa-circle-info text-lg"></i>
             </button>
 
-            <button onclick="resetGame()" class="p-2.5 bg-rose-900/40 hover:bg-rose-800/60 text-rose-300 rounded-xl border border-rose-700/50 transition-all" title="রিসেট">
+            <button onclick="resetGame()" class="p-2.5 bg-rose-950/50 hover:bg-rose-900/70 text-rose-300 rounded-xl border border-rose-800/60 transition-all" title="রিসেট">
                 <i class="fa-solid fa-rotate-right text-lg"></i>
             </button>
         </div>
     </header>
 
     <!-- Scoreboard Section -->
-    <section class="w-full max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+    <section class="w-full max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
         <div id="cardP1" class="glass-panel p-2.5 rounded-xl border-l-4 border-amber-500 transition-all duration-300">
             <div class="flex justify-between items-center mb-1">
-                <span class="text-xs font-medium text-gray-400" id="nameP1">প্লেয়ার ১ (নিচে)</span>
-                <span id="turnBadgeP1" class="hidden text-[10px] bg-amber-500 text-gray-900 font-bold px-1.5 py-0.5 rounded-full">চলতি চাল</span>
+                <span class="text-xs font-medium text-gray-300" id="nameP1">প্লেয়ার ১ (নিচে)</span>
+                <span id="turnBadgeP1" class="text-[10px] bg-amber-500 text-slate-950 font-black px-1.5 py-0.5 rounded-full">চলতি চাল</span>
             </div>
             <div class="flex justify-between items-baseline">
                 <span class="text-2xl font-black text-amber-400" id="scoreP1">০</span>
-                <span class="text-[11px] text-gray-400" id="pocketedP1">পয়েন্ট</span>
+                <span class="text-[11px] text-gray-400">পয়েন্ট</span>
             </div>
         </div>
 
-        <div id="cardP2" class="glass-panel p-2.5 rounded-xl border-l-4 border-gray-600 transition-all duration-300">
+        <div id="cardP2" class="glass-panel p-2.5 rounded-xl border-l-4 border-slate-600 transition-all duration-300 opacity-60">
             <div class="flex justify-between items-center mb-1">
-                <span class="text-xs font-medium text-gray-400" id="nameP2">প্লেয়ার ২ (উপরে)</span>
-                <span id="turnBadgeP2" class="hidden text-[10px] bg-amber-500 text-gray-900 font-bold px-1.5 py-0.5 rounded-full">চলতি চাল</span>
+                <span class="text-xs font-medium text-gray-300" id="nameP2">প্লেয়ার ২ (উপরে)</span>
+                <span id="turnBadgeP2" class="hidden text-[10px] bg-amber-500 text-slate-950 font-black px-1.5 py-0.5 rounded-full">চলতি চাল</span>
             </div>
             <div class="flex justify-between items-baseline">
                 <span class="text-2xl font-black text-amber-400" id="scoreP2">০</span>
-                <span class="text-[11px] text-gray-400" id="pocketedP2">পয়েন্ট</span>
+                <span class="text-[11px] text-gray-400">পয়েন্ট</span>
             </div>
         </div>
 
-        <div id="cardP3" class="glass-panel p-2.5 rounded-xl border-l-4 border-gray-600 transition-all duration-300 hidden">
+        <div id="cardP3" class="glass-panel p-2.5 rounded-xl border-l-4 border-slate-600 transition-all duration-300 hidden opacity-60">
             <div class="flex justify-between items-center mb-1">
-                <span class="text-xs font-medium text-gray-400">প্লেয়ার ৩ (বামে)</span>
-                <span id="turnBadgeP3" class="hidden text-[10px] bg-amber-500 text-gray-900 font-bold px-1.5 py-0.5 rounded-full">চলতি চাল</span>
+                <span class="text-xs font-medium text-gray-300">প্লেয়ার ৩ (বামে)</span>
+                <span id="turnBadgeP3" class="hidden text-[10px] bg-amber-500 text-slate-950 font-black px-1.5 py-0.5 rounded-full">চলতি চাল</span>
             </div>
             <div class="flex justify-between items-baseline">
                 <span class="text-2xl font-black text-amber-400" id="scoreP3">০</span>
@@ -114,10 +167,10 @@
             </div>
         </div>
 
-        <div id="cardP4" class="glass-panel p-2.5 rounded-xl border-l-4 border-gray-600 transition-all duration-300 hidden">
+        <div id="cardP4" class="glass-panel p-2.5 rounded-xl border-l-4 border-slate-600 transition-all duration-300 hidden opacity-60">
             <div class="flex justify-between items-center mb-1">
-                <span class="text-xs font-medium text-gray-400">প্লেয়ার ৪ (ডানে)</span>
-                <span id="turnBadgeP4" class="hidden text-[10px] bg-amber-500 text-gray-900 font-bold px-1.5 py-0.5 rounded-full">চলতি চাল</span>
+                <span class="text-xs font-medium text-gray-300">প্লেয়ার ৪ (ডানে)</span>
+                <span id="turnBadgeP4" class="hidden text-[10px] bg-amber-500 text-slate-950 font-black px-1.5 py-0.5 rounded-full">চলতি চাল</span>
             </div>
             <div class="flex justify-between items-baseline">
                 <span class="text-2xl font-black text-amber-400" id="scoreP4">০</span>
@@ -126,51 +179,75 @@
         </div>
     </section>
 
-    <!-- Main Game Canvas Container -->
+    <!-- Main Game Board Container -->
     <main class="relative flex-1 flex flex-col items-center justify-center w-full max-w-4xl">
-        <div class="board-container relative rounded-2xl overflow-hidden p-3 bg-gradient-to-br from-amber-900 via-yellow-950 to-amber-950 border-4 border-amber-800/80">
-            <canvas id="carromCanvas" class="block rounded-lg cursor-grab active:cursor-grabbing bg-[#f7e4c2] shadow-inner"></canvas>
+        <div class="board-shadow relative rounded-2xl overflow-hidden p-2.5 sm:p-3 bg-gradient-to-br from-amber-900 via-amber-950 to-amber-900 border-4 border-amber-800/80">
+            <canvas id="carromCanvas" class="block rounded-lg cursor-crosshair bg-[#f7e4c2] shadow-inner"></canvas>
 
-            <!-- Status overlay message -->
-            <div id="gameMessage" class="absolute top-6 left-1/2 -translate-x-1/2 bg-gray-900/90 text-amber-300 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold border border-amber-500/30 opacity-0 transition-opacity duration-300 pointer-events-none shadow-lg">
+            <!-- Mode Banner Badge -->
+            <div id="modeBanner" class="absolute top-4 left-4 bg-amber-500/90 text-slate-950 px-3 py-1 rounded-lg text-xs font-black shadow-md border border-amber-300/40">
+                ক্লাসিক ২ প্লেয়ার
+            </div>
+
+            <!-- Overlay Message Toast -->
+            <div id="gameMessage" class="absolute top-14 left-1/2 -translate-x-1/2 bg-slate-900/95 text-amber-300 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold border border-amber-500/40 opacity-0 transition-opacity duration-300 pointer-events-none shadow-2xl z-20">
                 চাল দিন!
             </div>
         </div>
 
-        <!-- Controls Helper Footbar -->
-        <div class="w-full max-w-lg mt-3 glass-panel p-2.5 rounded-xl flex items-center justify-between text-xs text-gray-300">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-arrows-left-right text-amber-400"></i>
-                <span>স্ট্রাইকার অবস্থান: বেইসলাইনে ড্রাগ করুন</span>
+        <!-- NEW FEATURE: Striker Position Control Slider & Arrow Buttons -->
+        <div class="w-full max-w-lg mt-3 glass-panel p-3 rounded-2xl flex flex-col gap-2 border border-slate-700/80 shadow-2xl">
+            <div class="flex items-center justify-between text-xs font-bold text-amber-400">
+                <span class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-sliders text-amber-400 text-sm"></i>
+                    স্ট্রাইকার পজিশন সামঞ্জস্য করুন
+                </span>
+                <span id="sliderValText" class="text-gray-300 font-mono text-[11px]">৫০%</span>
             </div>
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-crosshairs text-amber-400"></i>
-                <span>শট মারতে পিছন দিকে টেনে ছেড়ে দিন</span>
+
+            <div class="flex items-center gap-3">
+                <button onclick="stepStriker(-5)" class="p-2 bg-slate-800 hover:bg-slate-700 active:bg-amber-600 text-amber-400 hover:text-white rounded-xl border border-slate-700 transition-all flex items-center justify-center text-sm shadow-md" title="বামে সরান">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+
+                <div class="flex-1 relative flex items-center">
+                    <input type="range" id="strikerSlider" min="0" max="100" value="50" oninput="onSliderInputChange(this.value)" class="w-full cursor-pointer z-10">
+                </div>
+
+                <button onclick="stepStriker(5)" class="p-2 bg-slate-800 hover:bg-slate-700 active:bg-amber-600 text-amber-400 hover:text-white rounded-xl border border-slate-700 transition-all flex items-center justify-center text-sm shadow-md" title="ডানে সরান">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="flex justify-between items-center text-[11px] text-gray-400 pt-1 border-t border-slate-700/50">
+                <span><i class="fa-solid fa-hand-pointer text-amber-400"></i> বোর্ডে সরাসরি ক্লিক বা স্লাইডার দিয়ে পজিশন সেট করুন</span>
+                <span><i class="fa-solid fa-arrow-trend-up text-amber-400"></i> টেনে শট মারুন</span>
             </div>
         </div>
     </main>
 
     <!-- Rules Modal -->
     <div id="rulesModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-gray-900 border border-amber-500/30 w-full max-w-md rounded-2xl p-5 shadow-2xl text-gray-200">
-            <div class="flex justify-between items-center mb-4 border-b border-gray-800 pb-2">
+        <div class="bg-slate-900 border border-amber-500/30 w-full max-w-md rounded-2xl p-5 shadow-2xl text-slate-200">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
                 <h2 class="text-lg font-bold text-amber-400 flex items-center gap-2">
                     <i class="fa-solid fa-book-open"></i> ক্যারাম খেলার নিয়মাবলী
                 </h2>
                 <button onclick="closeRulesModal()" class="text-gray-400 hover:text-white text-xl">&times;</button>
             </div>
-            <div class="space-y-3 text-xs leading-relaxed text-gray-300 max-h-80 overflow-y-auto pr-1">
+            <div class="space-y-3 text-xs leading-relaxed text-slate-300 max-h-80 overflow-y-auto pr-1">
                 <p><strong class="text-amber-300">পয়েন্ট তালিকা:</strong></p>
                 <ul class="list-disc pl-5 space-y-1">
                     <li><span class="inline-block w-3 h-3 rounded-full bg-white border border-gray-400 mr-1"></span> সাদা গুটি: ১০ পয়েন্ট</li>
-                    <li><span class="inline-block w-3 h-3 rounded-full bg-black border border-gray-600 mr-1"></span> কালো গুটি: ৫ পয়েন্ট</li>
+                    <li><span class="inline-block w-3 h-3 rounded-full bg-slate-900 border border-slate-600 mr-1"></span> কালো গুটি: ৫ পয়েন্ট</li>
                     <li><span class="inline-block w-3 h-3 rounded-full bg-rose-600 mr-1"></span> লাল (কুইন): ৫০ পয়েন্ট</li>
                 </ul>
                 <p><strong class="text-amber-300">কুইন কভারিং রুল:</strong> কুইন পকেটে ফেলার পর অবশ্যই পরের চালে অথবা একই চালে যেকোনো একটি সাধারণ গুটি পকেটে ফেলতে হবে। তা না হলে কুইন পুনরায় বোর্ডে ফেরত আসবে।</p>
-                <p><strong class="text-amber-300">ফাউল (Foul):</strong> স্ট্রাইকার পকেটে পড়ে গেলে ফাউল হিসেবে পয়েন্ট কাটা যাবে এবং চাল হাতবদল হবে।</p>
-                <p><strong class="text-amber-300">কন্ট্রোল:</strong> স্ট্রাইকারটি লালে চিহ্নিত লাইন বরাবর টেনে পজিশন করুন, তারপর লক্ষ্য ও পাওয়ার সেট করতে স্ট্রাইকার থেকে উল্টো দিকে টেনে ছেড়ে দিন!</p>
+                <p><strong class="text-amber-300">আনফেয়ার ক্যারাম মোড (Unfair Mode):</strong> এক শটে একের অধিক গুটি পকেটে ঢুকলে **কেবলমাত্র ১ম গুটিটি কাউন্ট হবে**। বাকি গুটিগুলি স্বয়ংক্রিয়ভাবে বোর্ডের কেন্দ্রে পুনস্থাপিত হবে!</p>
+                <p><strong class="text-amber-300">ফাউল (Foul):</strong> স্ট্রাইকার পকেটে পড়লে ৫ পয়েন্ট কাটা যাবে।</p>
+                <p><strong class="text-amber-300">কন্ট্রোল:</strong> নিচের নতুন স্লাইডার বা বোর্ডে ক্লিক করে স্ট্রাইকার ডানে-বামে নিয়ে পজিশন করুন, তারপর স্ট্রাইকার থেকে উল্টো দিকে টেনে গতি দিয়ে ছেড়ে দিন!</p>
             </div>
-            <button onclick="closeRulesModal()" class="mt-5 w-full py-2 bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold rounded-xl transition-all">
+            <button onclick="closeRulesModal()" class="mt-5 w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl transition-all shadow-lg">
                 ঠিক আছে, খেলুন!
             </button>
         </div>
@@ -178,23 +255,22 @@
 
     <!-- Game Over Modal -->
     <div id="gameOverModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-gray-900 border-2 border-amber-500/50 w-full max-w-sm rounded-2xl p-6 shadow-2xl text-center">
+        <div class="bg-slate-900 border-2 border-amber-500/50 w-full max-w-sm rounded-2xl p-6 shadow-2xl text-center">
             <div class="text-4xl text-amber-400 mb-2"><i class="fa-solid fa-trophy"></i></div>
             <h2 class="text-2xl font-black text-white mb-1">খেলা সমাপ্ত!</h2>
             <p id="winnerText" class="text-lg font-bold text-amber-400 mb-4">প্লেয়ার ১ বিজয়ী হয়েছে!</p>
             
-            <div id="finalScoresList" class="bg-gray-800/80 rounded-xl p-3 mb-5 space-y-1 text-sm text-gray-300 border border-gray-700">
+            <div id="finalScoresList" class="bg-slate-800/80 rounded-xl p-3 mb-5 space-y-1 text-sm text-slate-300 border border-slate-700">
                 <!-- Scores injected dynamically -->
             </div>
 
-            <button onclick="resetGame(); closeGameOverModal();" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-gray-950 font-black rounded-xl shadow-lg transition-all transform active:scale-95">
+            <button onclick="resetGame(); closeGameOverModal();" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl shadow-lg transition-all transform active:scale-95">
                 পুনরায় খেলুন
             </button>
         </div>
     </div>
 
     <script>
-        /* Web Audio API Sound Generator for Realistic Sound FX */
         let audioCtx = null;
         let isSoundMuted = false;
 
@@ -214,10 +290,10 @@
                 const gain = audioCtx.createGain();
                 
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(180 + Math.random() * 80, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.08);
+                osc.frequency.setValueAtTime(200 + Math.random() * 90, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(35, audioCtx.currentTime + 0.08);
 
-                const vol = Math.min(Math.max(volume, 0.1), 1) * 0.5;
+                const vol = Math.min(Math.max(volume, 0.1), 1) * 0.45;
                 gain.gain.setValueAtTime(vol, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
 
@@ -239,17 +315,17 @@
                 const gain = audioCtx.createGain();
 
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(320, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.18);
+                osc.frequency.setValueAtTime(340, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.2);
 
-                gain.gain.setValueAtTime(0.6, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+                gain.gain.setValueAtTime(0.55, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
 
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
 
                 osc.start();
-                osc.stop(audioCtx.currentTime + 0.18);
+                osc.stop(audioCtx.currentTime + 0.2);
             } catch(e) { console.error(e); }
         }
 
@@ -266,38 +342,35 @@
         const canvas = document.getElementById('carromCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Game Configuration & Dimensions
-        const BOARD_SIZE = 600; // Native canvas logical dimensions
+        const BOARD_SIZE = 600;
         canvas.width = BOARD_SIZE;
         canvas.height = BOARD_SIZE;
 
         const FRAME_WIDTH = 42;
         const PLAY_AREA_MIN = FRAME_WIDTH;
         const PLAY_AREA_MAX = BOARD_SIZE - FRAME_WIDTH;
-        const POCKET_RADIUS = 22;
+        const POCKET_RADIUS = 23;
         const COIN_RADIUS = 12;
         const STRIKER_RADIUS = 16;
-        const FRICTION = 0.982; // Friction deceleration per frame
+        const FRICTION = 0.982;
 
-        // Colors
-        const COLOR_BOARD = '#f5e3be';
-        const COLOR_LINE = '#8b4513';
+        const COLOR_BOARD = '#f6e4c3';
+        const COLOR_LINE = '#7c2d12';
         const COLOR_WHITE_COIN = '#f8fafc';
         const COLOR_BLACK_COIN = '#1e293b';
-        const COLOR_QUEEN = '#e11d48';
+        const COLOR_QUEEN = '#dc2626';
 
-        // Game State
-        let gameMode = 2; // 2 or 4 players
-        let currentPlayer = 1; // 1, 2 (or 1, 2, 3, 4)
+        // State Variables
+        let currentGameMode = '2p'; // '2p', '4p', 'unfair'
+        let currentPlayer = 1; 
         let scores = { 1: 0, 2: 0, 3: 0, 4: 0 };
         let coins = [];
         let striker = null;
-        
-        let queenPocketedBy = null; // Who pocketed queen
+
+        let queenPocketedBy = null;
         let queenNeedsCover = false;
         let isQueenCovered = false;
 
-        // Interactive Shot Aiming State
         let isDraggingStriker = false;
         let isAiming = false;
         let aimStartPos = { x: 0, y: 0 };
@@ -306,6 +379,9 @@
         let turnHasScored = false;
         let strikerFoul = false;
 
+        // Unfair Mode Specific Tracking
+        let shotPocketedCount = 0;
+
         class Piece {
             constructor(x, y, radius, type, color, points) {
                 this.x = x;
@@ -313,11 +389,11 @@
                 this.vx = 0;
                 this.vy = 0;
                 this.radius = radius;
-                this.type = type; // 'white', 'black', 'queen', 'striker'
+                this.type = type;
                 this.color = color;
                 this.points = points;
                 this.isPocketed = false;
-                this.scale = 1; // For sinking animation
+                this.scale = 1;
             }
 
             draw() {
@@ -327,13 +403,13 @@
                 ctx.translate(this.x, this.y);
                 ctx.scale(this.scale, this.scale);
 
-                // Outer Shadow
+                // Shadow
                 ctx.beginPath();
                 ctx.arc(2, 3, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
                 ctx.fill();
 
-                // Main Circle Body
+                // Main Body
                 ctx.beginPath();
                 ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
@@ -342,11 +418,11 @@
                 ctx.strokeStyle = '#334155';
                 ctx.stroke();
 
-                // Decorative Inner Details based on type
+                // Inner details
                 if (this.type === 'striker') {
                     ctx.beginPath();
                     ctx.arc(0, 0, this.radius * 0.65, 0, Math.PI * 2);
-                    ctx.strokeStyle = '#3b82f6';
+                    ctx.strokeStyle = '#2563eb';
                     ctx.lineWidth = 2;
                     ctx.stroke();
 
@@ -383,17 +459,15 @@
                 this.x += this.vx;
                 this.y += this.vy;
 
-                // Apply deceleration (friction)
                 this.vx *= FRICTION;
                 this.vy *= FRICTION;
 
-                // Stop tiny vibrations
                 if (Math.hypot(this.vx, this.vy) < 0.05) {
                     this.vx = 0;
                     this.vy = 0;
                 }
 
-                // Bounce off wooden borders
+                // Border Bounce Physics
                 const min = PLAY_AREA_MIN + this.radius;
                 const max = PLAY_AREA_MAX - this.radius;
 
@@ -424,10 +498,10 @@
             const centerX = BOARD_SIZE / 2;
             const centerY = BOARD_SIZE / 2;
 
-            // Queen in exact center
+            // Center Queen
             coins.push(new Piece(centerX, centerY, COIN_RADIUS, 'queen', COLOR_QUEEN, 50));
 
-            // Inner circle of 6 pieces around Queen
+            // Inner ring
             const innerCount = 6;
             const ring1Radius = COIN_RADIUS * 2.1;
             for (let i = 0; i < innerCount; i++) {
@@ -440,7 +514,7 @@
                 coins.push(new Piece(x, y, COIN_RADIUS, type, color, pts));
             }
 
-            // Outer circle of 12 pieces
+            // Outer ring
             const outerCount = 12;
             const ring2Radius = COIN_RADIUS * 4.15;
             for (let i = 0; i < outerCount; i++) {
@@ -453,48 +527,30 @@
                 coins.push(new Piece(x, y, COIN_RADIUS, type, color, pts));
             }
 
-            // Initialize Striker
             resetStrikerPosition();
         }
 
-        // Calculate baseline bounds depending on current player turn
         function getPlayerBaseline(player) {
             const margin = 100;
-            const lineOffset = 78; // Distance from board edge
+            const lineOffset = 78;
 
             if (player === 1) { // Bottom
-                return {
-                    y: BOARD_SIZE - lineOffset,
-                    minX: margin,
-                    maxX: BOARD_SIZE - margin,
-                    horizontal: true
-                };
+                return { y: BOARD_SIZE - lineOffset, minX: margin, maxX: BOARD_SIZE - margin, horizontal: true };
             } else if (player === 2) { // Top
-                return {
-                    y: lineOffset,
-                    minX: margin,
-                    maxX: BOARD_SIZE - margin,
-                    horizontal: true
-                };
+                return { y: lineOffset, minX: margin, maxX: BOARD_SIZE - margin, horizontal: true };
             } else if (player === 3) { // Left
-                return {
-                    x: lineOffset,
-                    minY: margin,
-                    maxY: BOARD_SIZE - margin,
-                    horizontal: false
-                };
+                return { x: lineOffset, minY: margin, maxY: BOARD_SIZE - margin, horizontal: false };
             } else if (player === 4) { // Right
-                return {
-                    x: BOARD_SIZE - lineOffset,
-                    minY: margin,
-                    maxY: BOARD_SIZE - margin,
-                    horizontal: false
-                };
+                return { x: BOARD_SIZE - lineOffset, minY: margin, maxY: BOARD_SIZE - margin, horizontal: false };
             }
         }
 
         function resetStrikerPosition() {
             const base = getPlayerBaseline(currentPlayer);
+            const slider = document.getElementById('strikerSlider');
+            slider.value = 50;
+            updateSliderUI(50);
+
             if (base.horizontal) {
                 striker = new Piece((base.minX + base.maxX) / 2, base.y, STRIKER_RADIUS, 'striker', '#f8fafc', 0);
             } else {
@@ -502,24 +558,62 @@
             }
         }
 
+        function onSliderInputChange(val) {
+            if (isMoving) return;
+            const base = getPlayerBaseline(currentPlayer);
+            const percent = val / 100;
+
+            if (base.horizontal) {
+                striker.x = base.minX + (base.maxX - base.minX) * percent;
+            } else {
+                striker.y = base.minY + (base.maxY - base.minY) * percent;
+            }
+            updateSliderUI(val);
+        }
+
+        function stepStriker(delta) {
+            if (isMoving) return;
+            const slider = document.getElementById('strikerSlider');
+            let newVal = Math.max(0, Math.min(100, parseInt(slider.value) + delta));
+            slider.value = newVal;
+            onSliderInputChange(newVal);
+        }
+
+        function updateSliderUI(val) {
+            document.getElementById('sliderValText').innerText = `${Math.round(val)}%`;
+        }
+
+        function syncSliderFromStrikerPos() {
+            const base = getPlayerBaseline(currentPlayer);
+            let percent = 50;
+
+            if (base.horizontal) {
+                percent = ((striker.x - base.minX) / (base.maxX - base.minX)) * 100;
+            } else {
+                percent = ((striker.y - base.minY) / (base.maxY - base.minY)) * 100;
+            }
+
+            percent = Math.max(0, Math.min(100, percent));
+            document.getElementById('strikerSlider').value = percent;
+            updateSliderUI(percent);
+        }
+
         function drawBoardDetails() {
-            // 1. Board Background Base
             ctx.fillStyle = COLOR_BOARD;
             ctx.fillRect(0, 0, BOARD_SIZE, BOARD_SIZE);
 
-            // 2. Outer Wooden Frame
+            // Wooden outer frame
             ctx.fillStyle = '#5c2c06';
             ctx.fillRect(0, 0, BOARD_SIZE, FRAME_WIDTH);
             ctx.fillRect(0, BOARD_SIZE - FRAME_WIDTH, BOARD_SIZE, FRAME_WIDTH);
             ctx.fillRect(0, 0, FRAME_WIDTH, BOARD_SIZE);
             ctx.fillRect(BOARD_SIZE - FRAME_WIDTH, 0, FRAME_WIDTH, BOARD_SIZE);
 
-            // Frame Inner Shadow / Border
             ctx.strokeStyle = '#3a1a03';
             ctx.lineWidth = 3;
             ctx.strokeRect(FRAME_WIDTH, FRAME_WIDTH, BOARD_SIZE - FRAME_WIDTH * 2, BOARD_SIZE - FRAME_WIDTH * 2);
 
-            // 3. Four Corner Pockets
+            // Pockets
             const pockets = [
                 { x: PLAY_AREA_MIN + 12, y: PLAY_AREA_MIN + 12 },
                 { x: PLAY_AREA_MAX - 12, y: PLAY_AREA_MIN + 12 },
@@ -530,50 +624,46 @@
             pockets.forEach(p => {
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, POCKET_RADIUS, 0, Math.PI * 2);
-                ctx.fillStyle = '#111827';
+                ctx.fillStyle = '#0f172a';
                 ctx.fill();
                 ctx.strokeStyle = '#451a03';
                 ctx.lineWidth = 3;
                 ctx.stroke();
             });
 
-            // 4. Center Circle Graphics
+            // Center details
             const centerX = BOARD_SIZE / 2;
             const centerY = BOARD_SIZE / 2;
 
-            // Center outer ring
             ctx.beginPath();
             ctx.arc(centerX, centerY, 50, 0, Math.PI * 2);
             ctx.strokeStyle = COLOR_LINE;
             ctx.lineWidth = 1.5;
             ctx.stroke();
 
-            // Center small red circle
             ctx.beginPath();
             ctx.arc(centerX, centerY, COIN_RADIUS, 0, Math.PI * 2);
             ctx.fillStyle = COLOR_QUEEN;
             ctx.fill();
 
-            // 5. Baselines and Foul Circles on all 4 sides
-            drawBaseline(100, BOARD_SIZE - 78, BOARD_SIZE - 100, BOARD_SIZE - 78); // Bottom
-            drawBaseline(100, 78, BOARD_SIZE - 100, 78);                         // Top
-            drawBaseline(78, 100, 78, BOARD_SIZE - 100);                         // Left
-            drawBaseline(BOARD_SIZE - 78, 100, BOARD_SIZE - 78, BOARD_SIZE - 100); // Right
+            // Baselines
+            drawBaseline(100, BOARD_SIZE - 78, BOARD_SIZE - 100, BOARD_SIZE - 78);
+            drawBaseline(100, 78, BOARD_SIZE - 100, 78);
+            drawBaseline(78, 100, 78, BOARD_SIZE - 100);
+            drawBaseline(BOARD_SIZE - 78, 100, BOARD_SIZE - 78, BOARD_SIZE - 100);
         }
 
         function drawBaseline(x1, y1, x2, y2) {
             ctx.strokeStyle = COLOR_LINE;
             ctx.lineWidth = 1.2;
 
-            // Draw baseline line
             ctx.beginPath();
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
             ctx.stroke();
 
-            // Red Foul circles at baseline endpoints
             const radius = 10;
-            [ { x: x1, y: y1 }, { x: x2, y: y2 } ].forEach(pt => {
+            [{ x: x1, y: y1 }, { x: x2, y: y2 }].forEach(pt => {
                 ctx.beginPath();
                 ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2);
                 ctx.fillStyle = '#dc2626';
@@ -597,35 +687,26 @@
                     const minDist = p1.radius + p2.radius;
 
                     if (dist < minDist) {
-                        // Collision Response Elastic 2D
                         const angle = Math.atan2(dy, dx);
                         const sin = Math.sin(angle);
                         const cos = Math.cos(angle);
 
-                        // Position correction to prevent overlap
                         const overlap = minDist - dist;
                         p1.x -= cos * overlap * 0.5;
                         p1.y -= sin * overlap * 0.5;
                         p2.x += cos * overlap * 0.5;
                         p2.y += sin * overlap * 0.5;
 
-                        // Rotate velocities
                         const vx1 = p1.vx * cos + p1.vy * sin;
                         const vy1 = p1.vy * cos - p1.vx * sin;
                         const vx2 = p2.vx * cos + p2.vy * sin;
                         const vy2 = p2.vy * cos - p2.vx * sin;
 
-                        // Collision velocity swap
-                        const finalVx1 = vx2;
-                        const finalVx2 = vx1;
+                        p1.vx = vx2 * cos - vy1 * sin;
+                        p1.vy = vy1 * cos + vx2 * sin;
+                        p2.vx = vx1 * cos - vy2 * sin;
+                        p2.vy = vy2 * cos + vx1 * sin;
 
-                        // Convert back to original coordinate space
-                        p1.vx = finalVx1 * cos - vy1 * sin;
-                        p1.vy = vy1 * cos + finalVx1 * sin;
-                        p2.vx = finalVx2 * cos - vy2 * sin;
-                        p2.vy = vy2 * cos + finalVx2 * sin;
-
-                        // Sound effect based on collision velocity
                         const impactVel = Math.hypot(p1.vx - p2.vx, p1.vy - p2.vy);
                         if (impactVel > 0.5) {
                             playHitSound(impactVel / 15);
@@ -656,7 +737,7 @@
                 });
             });
 
-            // Check Striker Foul in Pocket
+            // Striker Foul
             if (!striker.isPocketed) {
                 pockets.forEach(p => {
                     const dist = Math.hypot(striker.x - p.x, striker.y - p.y);
@@ -664,26 +745,42 @@
                         striker.isPocketed = true;
                         strikerFoul = true;
                         playPocketSound();
-                        showMessage("ফাউল! স্ট্রাইকার পকেটে পড়েছে।");
+                        showMessage("ফাউল! স্ট্রাইকার পকেটে পড়েছে। (-৫ পয়েন্ট)");
                     }
                 });
             }
         }
 
         function handleCoinPocketed(coin) {
+            shotPocketedCount++;
+
+            // UNFAIR MODE RULE: Only 1st coin counts! Subsequent ones return to center immediately.
+            if (currentGameMode === 'unfair' && shotPocketedCount > 1) {
+                setTimeout(() => {
+                    coin.isPocketed = false;
+                    coin.scale = 1;
+                    coin.x = BOARD_SIZE / 2 + (Math.random() * 20 - 10);
+                    coin.y = BOARD_SIZE / 2 + (Math.random() * 20 - 10);
+                    coin.vx = 0;
+                    coin.vy = 0;
+                }, 300);
+                showMessage("আনফেয়ার মোড: অতিরিক্ত গুটি কেন্দ্রে ফেরত গেছে!");
+                return;
+            }
+
             turnHasScored = true;
 
             if (coin.type === 'queen') {
                 queenPocketedBy = currentPlayer;
                 queenNeedsCover = true;
-                showMessage(`প্লেয়ার ${currentPlayer} কুইন পকেটে ফেলেছেন! কভার করার জন্য আরেকটি গুটি ফেলুন।`);
+                showMessage(`প্লেয়ার ${currentPlayer} কুইন পকেটে ফেলেছেন! কভারের জন্য আরেকটি গুটি ফেলুন।`);
             } else {
                 scores[currentPlayer] += coin.points;
 
                 if (queenNeedsCover && queenPocketedBy === currentPlayer) {
                     isQueenCovered = true;
                     queenNeedsCover = false;
-                    scores[currentPlayer] += 50; // Claim Queen Bonus Points
+                    scores[currentPlayer] += 50;
                     showMessage(`কুইন কভার সফল! +৫০ পয়েন্ট বোনাস!`);
                 } else {
                     showMessage(`প্লেয়ার ${currentPlayer} পয়েন্ট পেয়েছেন: +${coin.points}`);
@@ -694,16 +791,13 @@
         }
 
         function checkTurnEnd() {
-            // Check if any piece is still moving
             const allPieces = [striker, ...coins.filter(c => !c.isPocketed)];
             const isAnyMoving = allPieces.some(p => Math.hypot(p.vx, p.vy) > 0.05);
 
             if (isMoving && !isAnyMoving) {
                 isMoving = false;
 
-                // Handle Queen Uncovered Penalty
                 if (queenNeedsCover && !isQueenCovered && !turnHasScored) {
-                    // Reset Queen back to center
                     const queen = coins.find(c => c.type === 'queen');
                     if (queen) {
                         queen.isPocketed = false;
@@ -718,25 +812,22 @@
                     showMessage("কুইন কভার হয়নি! কুইন আবার বোর্ডে স্থাপন করা হলো।");
                 }
 
-                // Handle Foul Penalty
                 if (strikerFoul) {
                     scores[currentPlayer] = Math.max(0, scores[currentPlayer] - 5);
                     updateScoreboardUI();
                 }
 
-                // Turn Pass Rule: If no piece was pocketed or foul occurred, pass turn
                 if (!turnHasScored || strikerFoul) {
                     switchTurn();
                 } else {
                     showMessage(`প্লেয়ার ${currentPlayer}-এর পুনরায় চাল!`);
                 }
 
-                // Reset turn flags
                 turnHasScored = false;
                 strikerFoul = false;
+                shotPocketedCount = 0;
                 resetStrikerPosition();
 
-                // Check Game Over Condition
                 const remainingCoins = coins.filter(c => !c.isPocketed && c.type !== 'queen');
                 if (remainingCoins.length === 0) {
                     endGame();
@@ -745,10 +836,10 @@
         }
 
         function switchTurn() {
-            if (gameMode === 2) {
-                currentPlayer = currentPlayer === 1 ? 2 : 1;
+            if (currentGameMode === '4p') {
+                currentPlayer = (currentPlayer % 4) + 1;
             } else {
-                currentPlayer = currentPlayer % 4 + 1;
+                currentPlayer = currentPlayer === 1 ? 2 : 1;
             }
             updateScoreboardUI();
             showMessage(`প্লেয়ার ${currentPlayer}-এর চাল`);
@@ -779,17 +870,18 @@
                 aimStartPos = { x: striker.x, y: striker.y };
                 aimCurrentPos = pos;
             } else {
-                // Check if user is tapping along player baseline to reposition
                 const base = getPlayerBaseline(currentPlayer);
                 if (base.horizontal) {
-                    if (Math.abs(pos.y - base.y) < 30 && pos.x >= base.minX && pos.x <= base.maxX) {
+                    if (Math.abs(pos.y - base.y) < 35 && pos.x >= base.minX && pos.x <= base.maxX) {
                         isDraggingStriker = true;
                         striker.x = pos.x;
+                        syncSliderFromStrikerPos();
                     }
                 } else {
-                    if (Math.abs(pos.x - base.x) < 30 && pos.y >= base.minY && pos.y <= base.maxY) {
+                    if (Math.abs(pos.x - base.x) < 35 && pos.y >= base.minY && pos.y <= base.maxY) {
                         isDraggingStriker = true;
                         striker.y = pos.y;
+                        syncSliderFromStrikerPos();
                     }
                 }
             }
@@ -807,6 +899,7 @@
                 } else {
                     striker.y = Math.max(base.minY, Math.min(base.maxY, pos.y));
                 }
+                syncSliderFromStrikerPos();
             } else if (isAiming) {
                 aimCurrentPos = pos;
             }
@@ -820,7 +913,6 @@
             if (isAiming) {
                 isAiming = false;
 
-                // Calculate shot impulse vector
                 const dx = aimStartPos.x - aimCurrentPos.x;
                 const dy = aimStartPos.y - aimCurrentPos.y;
                 const power = Math.hypot(dx, dy);
@@ -834,12 +926,12 @@
                     striker.vy = Math.sin(angle) * normalizedPower;
 
                     isMoving = true;
+                    shotPocketedCount = 0;
                     playHitSound(1);
                 }
             }
         }
 
-        // Attach Mouse & Touch Listeners
         canvas.addEventListener('mousedown', handlePointerDown);
         canvas.addEventListener('mousemove', handlePointerMove);
         window.addEventListener('mouseup', handlePointerUp);
@@ -858,17 +950,15 @@
 
             ctx.save();
 
-            // Draw Aiming Trajectory Line
             const lineLength = dist * 2.5;
             ctx.beginPath();
             ctx.moveTo(striker.x, striker.y);
             ctx.lineTo(striker.x + Math.cos(angle) * lineLength, striker.y + Math.sin(angle) * lineLength);
-            ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.85)';
             ctx.lineWidth = 2.5;
             ctx.setLineDash([6, 4]);
             ctx.stroke();
 
-            // Draw Pullback Elastic Line
             ctx.beginPath();
             ctx.moveTo(striker.x, striker.y);
             ctx.lineTo(aimCurrentPos.x, aimCurrentPos.y);
@@ -877,7 +967,6 @@
             ctx.setLineDash([]);
             ctx.stroke();
 
-            // Pullback anchor dot
             ctx.beginPath();
             ctx.arc(aimCurrentPos.x, aimCurrentPos.y, 6, 0, Math.PI * 2);
             ctx.fillStyle = '#f59e0b';
@@ -889,10 +978,8 @@
         function gameLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Draw static background and board
             drawBoardDetails();
 
-            // 2. Physics updates if pieces are active
             if (isMoving) {
                 striker.update();
                 coins.forEach(c => c.update());
@@ -901,11 +988,9 @@
                 checkTurnEnd();
             }
 
-            // 3. Draw Coins and Striker
             coins.forEach(c => c.draw());
             if (!striker.isPocketed) striker.draw();
 
-            // 4. Render Aiming Visual Guide
             renderAimGuide();
 
             requestAnimationFrame(gameLoop);
@@ -921,22 +1006,32 @@
         }
 
         function setGameMode(mode) {
-            gameMode = mode;
-            const btn2p = document.getElementById('mode2p');
-            const btn4p = document.getElementById('mode4p');
+            currentGameMode = mode;
 
-            if (mode === 2) {
-                btn2p.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 bg-amber-500 text-gray-900 shadow-md';
-                btn4p.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-300 hover:text-white transition-all duration-200';
+            const btn2p = document.getElementById('btn2p');
+            const btn4p = document.getElementById('btn4p');
+            const btnUnfair = document.getElementById('btnUnfair');
+            const banner = document.getElementById('modeBanner');
+
+            const activeClass = 'px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 bg-amber-500 text-slate-950 shadow-md';
+            const inactiveClass = 'px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-300 hover:text-white transition-all duration-200';
+
+            btn2p.className = mode === '2p' ? activeClass : inactiveClass;
+            btn4p.className = mode === '4p' ? activeClass : inactiveClass;
+            btnUnfair.className = mode === 'unfair' ? 'px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 bg-rose-600 text-white shadow-md flex items-center gap-1' : 'px-3 py-1.5 text-xs font-semibold rounded-lg text-rose-300 hover:text-rose-100 transition-all duration-200 flex items-center gap-1';
+
+            if (mode === '2p') {
+                banner.innerText = 'ক্লাসিক ২ প্লেয়ার';
                 document.getElementById('cardP3').classList.add('hidden');
                 document.getElementById('cardP4').classList.add('hidden');
-                document.getElementById('nameP2').innerText = 'প্লেয়ার ২ (উপরে)';
-            } else {
-                btn4p.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 bg-amber-500 text-gray-900 shadow-md';
-                btn2p.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg text-gray-300 hover:text-white transition-all duration-200';
+            } else if (mode === '4p') {
+                banner.innerText = 'ক্লাসিক ৪ প্লেয়ার';
                 document.getElementById('cardP3').classList.remove('hidden');
                 document.getElementById('cardP4').classList.remove('hidden');
-                document.getElementById('nameP2').innerText = 'প্লেয়ার ২ (উপরে)';
+            } else if (mode === 'unfair') {
+                banner.innerText = '⚡ আনফেয়ার ক্যারাম (১ম গুটি মাত্র)';
+                document.getElementById('cardP3').classList.add('hidden');
+                document.getElementById('cardP4').classList.add('hidden');
             }
 
             resetGame();
@@ -952,12 +1047,12 @@
 
                 if (cardEl && badgeEl) {
                     if (i === currentPlayer) {
-                        cardEl.classList.add('border-amber-500', 'bg-gray-800/90');
-                        cardEl.classList.remove('border-gray-600');
+                        cardEl.classList.add('border-amber-500', 'bg-slate-800/90');
+                        cardEl.classList.remove('border-slate-600', 'opacity-60');
                         badgeEl.classList.remove('hidden');
                     } else {
-                        cardEl.classList.remove('border-amber-500', 'bg-gray-800/90');
-                        cardEl.classList.add('border-gray-600');
+                        cardEl.classList.remove('border-amber-500', 'bg-slate-800/90');
+                        cardEl.classList.add('border-slate-600', 'opacity-60');
                         badgeEl.classList.add('hidden');
                     }
                 }
@@ -973,6 +1068,7 @@
             isMoving = false;
             turnHasScored = false;
             strikerFoul = false;
+            shotPocketedCount = 0;
 
             initBoardPieces();
             updateScoreboardUI();
@@ -983,7 +1079,7 @@
             let winner = 1;
             let maxScore = scores[1];
 
-            const totalPlayers = gameMode;
+            const totalPlayers = currentGameMode === '4p' ? 4 : 2;
             for (let i = 2; i <= totalPlayers; i++) {
                 if (scores[i] > maxScore) {
                     maxScore = scores[i];
@@ -997,7 +1093,7 @@
             listEl.innerHTML = '';
             for (let i = 1; i <= totalPlayers; i++) {
                 const row = document.createElement('div');
-                row.className = 'flex justify-between items-center py-1 border-b border-gray-700/50 last:border-0';
+                row.className = 'flex justify-between items-center py-1 border-b border-slate-700/50 last:border-0';
                 row.innerHTML = `<span>প্লেয়ার ${i}</span> <span class="font-bold text-amber-400">${scores[i]} পয়েন্ট</span>`;
                 listEl.appendChild(row);
             }
@@ -1017,7 +1113,6 @@
             document.getElementById('rulesModal').classList.add('hidden');
         }
 
-        // Initialize on Window Load
         window.onload = function() {
             initBoardPieces();
             updateScoreboardUI();
